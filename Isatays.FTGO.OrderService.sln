@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6BFDB081-0BF4-4EA5-AC44-2BAA25BD7A02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isatays.FTGO.OrderService.Core", "src\Isatays.FTGO.OrderService.Core\Isatays.FTGO.OrderService.Core.csproj", "{3C724A14-BA99-429E-AEC5-B0B16A420900}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isatays.FTGO.OrderService.Infrastructure", "src\Isatays.FTGO.OrderService.Infrastructure\Isatays.FTGO.OrderService.Infrastructure.csproj", "{E6553B2E-FFA6-41F4-9A57-8C7D614BF20D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isatays.FTGO.OrderService.Api", "src\Isatays.FTGO.OrderService.Api\Isatays.FTGO.OrderService.Api.csproj", "{99CECE81-0D03-4595-9869-8FABBD55492A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{AC3FDB40-F212-49C0-8BAC-4386CE66EC8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Isatays.FTGO.OrderService.UnitTests", "tests\Isatays.FTGO.OrderService.UnitTests\Isatays.FTGO.OrderService.UnitTests.csproj", "{E52F9483-B7CA-49C7-9718-4248C002E9FC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C724A14-BA99-429E-AEC5-B0B16A420900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C724A14-BA99-429E-AEC5-B0B16A420900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C724A14-BA99-429E-AEC5-B0B16A420900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C724A14-BA99-429E-AEC5-B0B16A420900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6553B2E-FFA6-41F4-9A57-8C7D614BF20D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6553B2E-FFA6-41F4-9A57-8C7D614BF20D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6553B2E-FFA6-41F4-9A57-8C7D614BF20D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6553B2E-FFA6-41F4-9A57-8C7D614BF20D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99CECE81-0D03-4595-9869-8FABBD55492A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99CECE81-0D03-4595-9869-8FABBD55492A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99CECE81-0D03-4595-9869-8FABBD55492A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99CECE81-0D03-4595-9869-8FABBD55492A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E52F9483-B7CA-49C7-9718-4248C002E9FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E52F9483-B7CA-49C7-9718-4248C002E9FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E52F9483-B7CA-49C7-9718-4248C002E9FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E52F9483-B7CA-49C7-9718-4248C002E9FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3C724A14-BA99-429E-AEC5-B0B16A420900} = {6BFDB081-0BF4-4EA5-AC44-2BAA25BD7A02}
+		{E6553B2E-FFA6-41F4-9A57-8C7D614BF20D} = {6BFDB081-0BF4-4EA5-AC44-2BAA25BD7A02}
+		{99CECE81-0D03-4595-9869-8FABBD55492A} = {6BFDB081-0BF4-4EA5-AC44-2BAA25BD7A02}
+		{E52F9483-B7CA-49C7-9718-4248C002E9FC} = {AC3FDB40-F212-49C0-8BAC-4386CE66EC8F}
+	EndGlobalSection
+EndGlobal

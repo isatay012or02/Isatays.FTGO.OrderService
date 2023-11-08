@@ -1,25 +1,60 @@
+using Isatays.FTGO.OrderService.Api.Common;
+using Isatays.FTGO.OrderService.Api.Features.Middlewares;
+using Isatays.FTGO.OrderService.Api.Features.Swagger;
+using Isatays.FTGO.OrderService.Api.Features.Versioning;
+using Isatays.FTGO.OrderService.Api.Features.WebApi;
+using Isatays.FTGO.OrderService.Core;
+using Isatays.FTGO.OrderService.Infrastructure;
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var webHostOptions = new WebHostOptions(
+    instanceName: builder.Configuration.GetValue<string>($"{WebHostOptions.SectionName}:InstanceName"),
+    webAddress: builder.Configuration.GetValue<string>($"{WebHostOptions.SectionName}:WebAddress"));
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+try
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+    builder.Logging.ClearProviders();
+    builder.Logging.AddSerilog(Log.Logger);
+
+    builder.ConfigureHostVersioning();
+
+    builder.ConfigureWebHost();
+
+    builder.Services.ConfigureApplicationAssemblies();
+
+    builder.Services
+        .ConfigureInfrastructurePersistence(builder.Configuration, builder.Environment.EnvironmentName)
+        .ConfigureInfrastructureServices()
+        .ConfigureInfrastructureMassTransit()
+        .ConfigureInfratructureOptions(builder.Configuration);
+
+    var app = builder.Build();
+
+    Log.Information("{Msg} ({ApplicationName})...",
+        "Запуск сборки проекта",
+        webHostOptions.InstanceName);
+
+    app.UseConfiguredSwagger();
+    app.UseConfiguredVersioning();
+    app.UseHttpsRedirection();
+    app.UseMiddleware<LoggingMiddleware>();
+    app.UseMiddleware<ExceptionHandleMiddleware>();
+    app.MapHealthChecks("/healthcheck");
+
+    app.MapControllers();
+
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Программа была выброшена с исплючением ({ApplicationName})!",
+        webHostOptions.InstanceName);
+}
+finally
+{
+    Log.Information("{Msg}!", "Высвобождение ресурсов логгирования");
+    await Log.CloseAndFlushAsync();
+}

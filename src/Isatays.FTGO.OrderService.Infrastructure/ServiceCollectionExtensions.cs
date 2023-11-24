@@ -53,8 +53,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection ConfigureInfratructureOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<CustomerServiceHttpsClientOptions>(
-            configuration.GetSection(CustomerServiceHttpsClientOptions.SectionName));
+        services.Configure<CustomerServiceHttpClientOptions>(
+            configuration.GetSection(CustomerServiceHttpClientOptions.SectionName));
 
         return services;
     }

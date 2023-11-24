@@ -10,5 +10,8 @@ public class Order
     public Guid Id { get; set; }
 
     [Column("customerId")]
-    public Guid CustomerId { get; set; }
+    public string Name { get; set; }
+
+    [Column("email")]
+    public string Email { get; set; }
 }

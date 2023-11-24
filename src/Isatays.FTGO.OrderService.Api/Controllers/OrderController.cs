@@ -9,7 +9,6 @@ namespace Isatays.FTGO.OrderService.Api.Controllers;
 /// <summary>
 /// Cotroller special for foods
 /// </summary>
-[Route("api/[controller]")]
 [Route("api/v{version:apiVersion}/order")]
 [ApiVersion("1.0")]
 public class OrderController : BaseController

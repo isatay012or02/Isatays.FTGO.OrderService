@@ -13,11 +13,11 @@ public class CustomerServiceHttpClient
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly CustomerServiceHttpsClientOptions _options;
+    private readonly CustomerServiceHttpClientOptions _options;
 
     public CustomerServiceHttpClient(IHttpClientFactory clientFactory,
         IHttpContextAccessor httpContextAccessor,
-        IOptions<CustomerServiceHttpsClientOptions> options)
+        IOptions<CustomerServiceHttpClientOptions> options)
     {
         _httpContextAccessor = httpContextAccessor ??
                 throw new ArgumentNullException(nameof(httpContextAccessor));

@@ -13,7 +13,7 @@ namespace Isatays.FTGO.OrderService.Api.Controllers;
 [ApiVersion("1.0")]
 public class OrderController : BaseController
 {
-	private ILogger<OrderController> _logger;
+	private readonly ILogger<OrderController> _logger;
 
 	public OrderController(ILogger<OrderController> logger)
 	{

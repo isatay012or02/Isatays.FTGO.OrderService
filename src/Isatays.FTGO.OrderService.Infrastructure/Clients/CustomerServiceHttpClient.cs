@@ -12,15 +12,14 @@ namespace Isatays.FTGO.OrderService.Infrastructure.Clients;
 public class CustomerServiceHttpClient
 {
     private readonly HttpClient _httpClient;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    //private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly CustomerServiceHttpClientOptions _options;
 
     public CustomerServiceHttpClient(IHttpClientFactory clientFactory,
-        IHttpContextAccessor httpContextAccessor,
         IOptions<CustomerServiceHttpClientOptions> options)
     {
-        _httpContextAccessor = httpContextAccessor ??
-                throw new ArgumentNullException(nameof(httpContextAccessor));
+        //_httpContextAccessor = httpContextAccessor ??
+        //        throw new ArgumentNullException(nameof(httpContextAccessor));
         _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         _httpClient = clientFactory.CreateClient(nameof(CustomerServiceHttpClient)) ??
             throw new ArgumentNullException(nameof(clientFactory));
@@ -40,6 +39,30 @@ public class CustomerServiceHttpClient
         catch (Exception ex)
         {
             
+            throw new RetryableException(ex.Message);
+        }
+
+        if (httpResponse.ShouldRetry(_options.StatusCodesToRetry))
+            throw new RetryableException($"PostAsync({_options.EndpointToVerifyCustomer})");
+
+        var content = await httpResponse.Content.ReadAsStringAsync();
+        var response = JsonConvert.DeserializeObject<Order>(content);
+
+        return response;
+    }
+
+    public async Task<Order> CreateTicket(VerifyCustomerDto request)
+    {
+        HttpResponseMessage httpResponse;
+        var httpContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+        try
+        {
+            httpResponse = await _httpClient.PostAsync(_options.EndpointToVerifyCustomer, httpContent);
+        }
+        catch (Exception ex)
+        {
+
             throw new RetryableException(ex.Message);
         }
 

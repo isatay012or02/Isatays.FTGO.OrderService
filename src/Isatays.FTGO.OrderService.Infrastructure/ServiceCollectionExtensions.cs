@@ -36,6 +36,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRabbitMqService, RabbitMqService>();
         services.AddScoped<IDataContext, DataContext>();
 
+        services.AddScoped<CustomerServiceHttpClient>();
+        services.AddHttpClient(nameof(CustomerServiceHttpClient));
+
         return services;
     }
 

@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.NetworkInformation;
 using System.Reflection;
 
 namespace Isatays.FTGO.OrderService.Core;

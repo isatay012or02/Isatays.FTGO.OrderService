@@ -24,7 +24,11 @@ public class OrderController : BaseController
     [ProducesResponseType(statusCode: (int)HttpStatusCode.OK, type: typeof(Order))]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
 	{
-		var result = await Sender.Send(new CreateOrderCommand(request.Id, request.Name, request.Email));
+		var result = await Sender.Send(
+			new CreateOrderCommand(
+				request.Id, request.Name, request.Email
+				)
+			);
 
         if (result.IsFailed)
             return ProblemResponse(result.Error);

@@ -1,10 +1,9 @@
-﻿namespace Isatays.FTGO.OrderService.Core.Entities;
+namespace Isatays.FTGO.OrderService.Core.Entities;
 
 public class Customer
 {
-    public Guid Id { get; private set; }
-
-    public string Name { get; private set; } = string.Empty;
-
-    public string Email { get; private set; } = string.Empty;
+    public int CustomerId { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string PhoneNumber { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using Isatays.FTGO.OrderService.Core.Interfaces;
+﻿using Isatays.FTGO.OrderService.Core.Entities;
+using Isatays.FTGO.OrderService.Core.Interfaces;
 using KDS.Primitives.FluentResult;
 using MediatR;
 
@@ -15,7 +16,12 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Res
 
 	public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
 	{
-		var result = await _orderService.CreateOrder(request.Id, request.Name, request.Email);
+		var result = await _orderService.CreateOrder(
+			new Order()
+			{
+				
+			}
+			);
 
 		return result;
 	}

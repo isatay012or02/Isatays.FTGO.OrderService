@@ -22,30 +22,19 @@ public class OrderService : IOrderService
 		_dataContext = dataContext;
 	}
 
-	public async Task<Result> CreateOrder(Guid id, string name, string email)
+	public async Task<Result> CreateOrder(Order order)
 	{
-		await _httpClient.VerifyCustomer(new(id, name, email));
+		//await _httpClient.VerifyCustomer(new(id, name, email));
 
 		using (var trans = _dataContext.Database.BeginTransaction())
 		{
 			try
 			{
-                var order = new Order
-                {
-                    Id = id,
-                    Name = name,
-                    Email = email
-                };
 
                 await _dataContext.AddAsync(order);
                 await _dataContext.SaveChangesAsync();
 
-                await _publishEndpoint.Publish(new OrderCreated
-                {
-                    Id = id,
-                    Name = name,
-                    Email = email
-                });
+                await _publishEndpoint.Publish(order);
 
                 trans.Commit();
             }

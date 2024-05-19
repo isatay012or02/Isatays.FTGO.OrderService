@@ -1,8 +1,9 @@
-﻿using KDS.Primitives.FluentResult;
+﻿using Isatays.FTGO.OrderService.Core.Entities;
+using KDS.Primitives.FluentResult;
 
 namespace Isatays.FTGO.OrderService.Core.Interfaces; 
 
-public interface IOrderService 
+public interface IOrderService
 {
-    Task<Result> CreateOrder(Guid id, string name, string email);
+    Task<Result> CreateOrder(Order order);
 }

@@ -29,8 +29,4 @@
     <ProjectReference Include="..\Isatays.FTGO.OrderService.Infrastructure\Isatays.FTGO.OrderService.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\ApiProfile\" />
-  </ItemGroup>
-
 </Project>

@@ -1,4 +1,5 @@
 using Isatays.FTGO.OrderService.Api.Common;
+using Isatays.FTGO.OrderService.Api.Features.AutoMapper;
 using Isatays.FTGO.OrderService.Api.Features.Middlewares;
 using Isatays.FTGO.OrderService.Api.Features.Swagger;
 using Isatays.FTGO.OrderService.Api.Features.Versioning;
@@ -24,8 +25,9 @@ try
     builder.ConfigureWebHost();
 
     builder.Services.ConfigureApplicationAssemblies();
-
+    
     builder.Services
+        .AddConfiguredAutoMapper()
         .ConfigureInfrastructurePersistence(builder.Configuration, builder.Environment.EnvironmentName)
         .ConfigureInfrastructureServices()
         .ConfigureInfrastructureMassTransit()

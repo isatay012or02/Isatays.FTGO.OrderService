@@ -7,12 +7,23 @@ namespace Isatays.FTGO.OrderService.Core.Entities;
 [Table("Order", Schema = "public")]
 public class Order
 {
+    [Column("id")]
     public int OrderId { get; set; }
+    
+    [Column("customerId")]
     public int CustomerId { get; set; }
+    
     public Customer Customer { get; set; }
+    
+    [Column("date")]
     public DateTime OrderDate { get; set; }
+    
+    [Column("deliveryDate")]
     public DateTime? DeliveryDate { get; set; }
-    public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+    
+    public List<OrderItem> Items { get; set; } = new();
+    
+    [Column("status")]
     public OrderStatus Status { get; set; }
     public decimal TotalAmount => CalculateTotalAmount();
     public PaymentDetails Payment { get; set; }

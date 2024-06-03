@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Text;
+using Isatays.FTGO.OrderService.Core.Common.Constants;
+using Isatays.FTGO.OrderService.Infrastructure.Common.Constants;
+using KDS.Primitives.FluentResult;
 
 namespace Isatays.FTGO.OrderService.Infrastructure.Clients;
 
@@ -28,9 +31,9 @@ public class CustomerServiceHttpClient
         _httpClient.Timeout = TimeSpan.FromSeconds(_options.TimeoutInSeconds);
     }
 
-    public async Task<Order> VerifyCustomer(VerifyCustomerDto request)
+    public async Task<Result<bool>> VerifyCustomer(Customer request)
     {
-        HttpResponseMessage httpResponse;
+        HttpResponseMessage httpResponse = null!;
         var httpContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
         try
@@ -39,16 +42,15 @@ public class CustomerServiceHttpClient
         }
         catch (Exception ex)
         {
-            
-            throw new RetryableException(ex.Message);
+            Result.Failure(InfrastructureError.HttpClientFail);
         }
 
         if (httpResponse.ShouldRetry(_options.StatusCodesToRetry))
-            throw new RetryableException($"PostAsync({_options.EndpointToVerifyCustomer})");
+            Result.Failure(new Error("",$"PostAsync({_options.EndpointToVerifyCustomer})"));
 
         var content = await httpResponse.Content.ReadAsStringAsync();
-        var response = JsonConvert.DeserializeObject<Order>(content);
+        var response = JsonConvert.DeserializeObject<bool>(content);
 
-        return response;
+        return Result.Success(response);
     }
 }

@@ -1,48 +1,45 @@
-﻿using Isatays.FTGO.OrderService.Core.Entities;
+﻿using Isatays.FTGO.OrderService.Core.Common.Constants;
+using Isatays.FTGO.OrderService.Core.Entities;
 using Isatays.FTGO.OrderService.Core.Interfaces;
 using Isatays.FTGO.OrderService.Infrastructure.Clients;
-using Isatays.FTGO.OrderService.Infrastructure.Persistence;
+using Isatays.FTGO.OrderService.Infrastructure.Common.Constants;
 using KDS.Primitives.FluentResult;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 
 namespace Isatays.FTGO.OrderService.Infrastructure.Services; 
 
-public class OrderService : IOrderService
+public class OrderService(
+	IPublishEndpoint publishEndpoint,
+	CustomerServiceHttpClient httpClient,
+	IDataContext dataContext,
+	ILogger<OrderService> logger)
+	: IOrderService
 {
-	private readonly CustomerServiceHttpClient _httpClient;
-    private readonly IPublishEndpoint _publishEndpoint;
-	private readonly DataContext _dataContext;
-
-	public OrderService(IPublishEndpoint publishEndpoint, 
-		CustomerServiceHttpClient httpClient,
-        DataContext dataContext)
-	{
-		_publishEndpoint = publishEndpoint;
-		_httpClient = httpClient;
-		_dataContext = dataContext;
-	}
-
 	public async Task<Result> CreateOrder(Order order)
 	{
-		//await _httpClient.VerifyCustomer(new(id, name, email));
+		var resultOfVerify = await httpClient.VerifyCustomer(order.Customer);
+		if (resultOfVerify.Value)
+			return Result.Failure(InfrastructureError.ValidationFail);
 
-		using (var trans = _dataContext.Database.BeginTransaction())
+		await using (var trans = await dataContext.Database.BeginTransactionAsync())
 		{
 			try
 			{
-
-                await _dataContext.AddAsync(order);
-                await _dataContext.SaveChangesAsync();
-
-                await _publishEndpoint.Publish(order);
-
-                trans.Commit();
+				await dataContext.AddAsync(order);
+				
+				await Task.WhenAll(
+					dataContext.SaveChangesAsync(),
+					publishEndpoint.Publish(order));
+				
+                await trans.CommitAsync();
             }
 			catch (Exception ex)
 			{
-				trans.Rollback();
+				await trans.RollbackAsync();
+				logger.LogError("{Message}", $"Exception message: {ex.Message}");
+				return Result.Failure(DomainError.DatabaseFailed);
 			}
-			
 		}
 
 		return Result.Success();

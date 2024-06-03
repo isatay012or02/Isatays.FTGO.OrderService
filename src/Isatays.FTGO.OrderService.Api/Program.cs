@@ -31,7 +31,7 @@ try
         .ConfigureInfrastructurePersistence(builder.Configuration, builder.Environment.EnvironmentName)
         .ConfigureInfrastructureServices()
         .ConfigureInfrastructureMassTransit()
-        .ConfigureInfratructureOptions(builder.Configuration);
+        .ConfigureInfrastructureOptions(builder.Configuration);
 
     var app = builder.Build();
 

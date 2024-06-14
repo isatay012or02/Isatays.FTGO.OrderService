@@ -26,7 +26,7 @@ public class OrderService(
 		{
 			try
 			{
-				await dataContext.AddAsync(order);
+				await dataContext.Orders.AddAsync(order);
 				
 				await Task.WhenAll(
 					dataContext.SaveChangesAsync(),

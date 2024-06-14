@@ -26,8 +26,8 @@ public class OrderController(ILogger<OrderController> logger) : BaseController
 	    var mappedOrder = Mapper.Map<CreateOrderCommand>(request);
 		var result = await Sender.Send(mappedOrder);
 
-        if (result.IsFailed)
-            return ProblemResponse(result.Error);
+        // if (result.IsFailed)
+        //     return ProblemResponse(result.Error);
 
         return Ok();
 	}

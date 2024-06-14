@@ -1,11 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Isatays.FTGO.OrderService.Core.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Isatays.FTGO.OrderService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Isatays.FTGO.OrderService.Core.Interfaces;
+using Isatays.FTGO.OrderService.Core.Orders;
 using Isatays.FTGO.OrderService.Infrastructure.Services;
 using MassTransit;
 using Isatays.FTGO.OrderService.Infrastructure.Clients;
+using MassTransit.EntityFrameworkCoreIntegration;
 
 namespace Isatays.FTGO.OrderService.Infrastructure;
 
@@ -39,15 +42,41 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection ConfigureInfrastructureMassTransit(this IServiceCollection services)
+    public static IServiceCollection ConfigureInfrastructureMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMassTransit(x =>
         {
-            x.UsingRabbitMq();
+            x.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ConcurrencyMode = ConcurrencyMode.Pessimistic;
+                    r.AddDbContext<DbContext, SagaDbContext>((provider, options) =>
+                    {
+                        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                    });
+                });
+
+            x.AddConsumer<CreateOrderCommandHandler>();
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(configuration[""], h =>
+                {
+                    h.Username(configuration[""]!);
+                    h.Password(configuration[""]!);
+                });
+
+                cfg.ReceiveEndpoint("order_saga_queue", e =>
+                {
+                    e.ConfigureSaga<OrderState>(context);
+                    e.ConfigureConsumer<CreateOrderCommandHandler>(context);
+                });
+            });
         });
-
+        
+        
         services.AddMassTransitHostedService();
-
+        
         return services;
     }
 

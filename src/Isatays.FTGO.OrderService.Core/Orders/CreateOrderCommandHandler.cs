@@ -1,28 +1,26 @@
-﻿using Isatays.FTGO.OrderService.Core.Entities;
+using Isatays.FTGO.OrderService.Core.DTO;
+using Isatays.FTGO.OrderService.Core.Entities;
 using Isatays.FTGO.OrderService.Core.Interfaces;
-using KDS.Primitives.FluentResult;
-using MediatR;
+using Isatays.FTGO.OrderService.Core.Payments;
+using MassTransit;
 
 namespace Isatays.FTGO.OrderService.Core.Orders;
 
-public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Result>
+public class CreateOrderCommandHandler(IOrderService service) : IConsumer<CreateOrderCommand>
 {
-    private readonly IOrderService _orderService;
+    public async Task Consume(ConsumeContext<CreateOrderCommand> context)
+    {
+        var command = context.Message;
 
-	public CreateOrderCommandHandler(IOrderService orderService)
-	{
-		_orderService = orderService;
-	}
+        var order = new Order
+        {
+            OrderId = command.OrderId,
+            CustomerId = command.CustomerId,
+            
+        };
 
-	public async Task<Result> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
-	{
-		var result = await _orderService.CreateOrder(
-			new Order()
-			{
-				
-			}
-			);
-
-		return result;
-	}
+        await service.CreateOrder(order);
+        
+        await context.Publish(new ProcessPaymentCommand(command.OrderId, 100));
+    }
 }

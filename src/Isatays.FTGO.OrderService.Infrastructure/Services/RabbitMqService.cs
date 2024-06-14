@@ -7,15 +7,8 @@ using MassTransit.RabbitMqTransport;
 
 namespace Isatays.FTGO.OrderService.Infrastructure.Services;
 
-public class RabbitMqService : IRabbitMqService
+public class RabbitMqService(IConfiguration configuration) : IRabbitMqService
 {
-    private readonly IConfiguration _configuration;
-
-    public RabbitMqService(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
     public void SendMessage(object obj)
     {
         var message = JsonSerializer.Serialize(obj);
@@ -24,9 +17,9 @@ public class RabbitMqService : IRabbitMqService
 
     public void SendMessage(string message)
     {
-        var host = _configuration.GetSection("RabbitMQ");
+        var host = configuration.GetSection("RabbitMQ");
         
-        var factory = new ConnectionFactory() { Uri = new Uri(host["Host"]) };
+        var factory = new ConnectionFactory { Uri = new Uri(host["Host"]) };
 
         using var connection = factory.CreateConnection();
         using var channel = connection.CreateModel();

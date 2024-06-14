@@ -8,7 +8,7 @@ namespace Isatays.FTGO.OrderService.Core.Entities;
 public class Order
 {
     [Column("id")]
-    public int OrderId { get; set; }
+    public Guid OrderId { get; set; }
     
     [Column("customerId")]
     public int CustomerId { get; set; }
@@ -62,7 +62,6 @@ public class Order
         {
             Status = OrderStatus.Created;
         }
-        // Add more logic for updating status based on other conditions
     }
     
     public bool IsPaid()

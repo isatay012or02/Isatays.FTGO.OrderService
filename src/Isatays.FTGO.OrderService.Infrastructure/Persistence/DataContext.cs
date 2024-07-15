@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Isatays.FTGO.OrderService.Infrastructure.Persistence;
 
-public class DataContext : DbContext, IDataContext
+public class DataContext(DbContextOptions<DataContext> options) : DbContext(options), IDataContext
 {
-    public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-
     public DbSet<Order> Orders { get; set; } 
 }

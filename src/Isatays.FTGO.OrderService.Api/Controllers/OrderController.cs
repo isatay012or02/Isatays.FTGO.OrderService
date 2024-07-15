@@ -3,31 +3,31 @@ using Isatays.FTGO.OrderService.Core.Entities;
 using Isatays.FTGO.OrderService.Core.Orders;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Isatays.FTGO.OrderService.Api.Controllers;
 
 /// <summary>
-/// Cotroller special for foods
+/// Controller of Order
 /// </summary>
 [Route("api/v{version:apiVersion}/order")]
 [ApiVersion("1.0")]
-public class OrderController : BaseController
+public class OrderController(ILogger<OrderController> logger) : BaseController
 {
-	private readonly ILogger<OrderController> _logger;
-
-	public OrderController(ILogger<OrderController> logger)
-	{
-		_logger = logger;
-	}
-
-	[HttpPost("create-order")]
+	/// <summary>
+	/// this endpoint for create an order
+	/// </summary>
+	[Authorize(Roles = "Moderator")]
+	[HttpPost]
     [ProducesResponseType(statusCode: (int)HttpStatusCode.OK, type: typeof(Order))]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
-	{
-		var result = await Sender.Send(new CreateOrderCommand(request.Id, request.Name, request.Email));
+    {
+	    var mappedOrder = Mapper.Map<CreateOrderCommand>(request);
+		var result = await Sender.Send(mappedOrder);
 
-        if (result.IsFailed)
-            return ProblemResponse(result.Error);
+        // if (result.IsFailed)
+        //     return ProblemResponse(result.Error);
 
         return Ok();
 	}

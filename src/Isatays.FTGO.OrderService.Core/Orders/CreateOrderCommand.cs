@@ -1,20 +1,7 @@
-﻿using KDS.Primitives.FluentResult;
-using MediatR;
+﻿using Isatays.FTGO.OrderService.Core.Entities;
+using Isatays.FTGO.OrderService.Core.Entities.Enums;
 
 namespace Isatays.FTGO.OrderService.Core.Orders;
 
-public class CreateOrderCommand : IRequest<Result>
-{
-    public CreateOrderCommand(Guid id, string name, string email)
-    {
-        Id = id;
-        Name = name;
-        Email = email;
-    }
-
-    public Guid Id { get; set; }
-
-    public string Name { get; set; }
-
-    public string Email { get; set; }
-}
+public record CreateOrderCommand(Guid OrderId, int CustomerId, Customer Customer, DateTime OrderDate, 
+    DateTime? DeliveryDate, List<OrderItem> Items, OrderStatus Status, decimal TotalAmount);

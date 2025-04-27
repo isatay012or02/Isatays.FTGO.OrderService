@@ -1,9 +1,8 @@
 ﻿using Isatays.FTGO.OrderService.Api.Models;
 using Isatays.FTGO.OrderService.Core.Entities;
-using Isatays.FTGO.OrderService.Core.Orders;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using AutoMapper;
+using Isatays.FTGO.OrderService.Core.Application.Commands;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Isatays.FTGO.OrderService.Api.Controllers;

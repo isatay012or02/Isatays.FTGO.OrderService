@@ -1,14 +1,11 @@
-﻿using Isatays.FTGO.OrderService.Core.Entities;
+﻿using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Isatays.FTGO.OrderService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Isatays.FTGO.OrderService.Core.Interfaces;
-using Isatays.FTGO.OrderService.Core.Orders;
+using Isatays.FTGO.OrderService.Core.Ports;
 using Isatays.FTGO.OrderService.Infrastructure.Services;
-using MassTransit;
-using Isatays.FTGO.OrderService.Infrastructure.Clients;
-using MassTransit.EntityFrameworkCoreIntegration;
+using Isatays.FTGO.OrderService.Infrastructure.Services.Options;
 
 namespace Isatays.FTGO.OrderService.Infrastructure;
 
@@ -35,56 +32,33 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services)
     {
-        services.AddScoped<IOrderService, Services.OrderService>();
-        services.AddScoped<IRabbitMqService, RabbitMqService>();
         services.AddScoped<IDataContext, DataContext>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
 
-    public static IServiceCollection ConfigureInfrastructureMassTransit(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection ConfigureInfrastructureKafka(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMassTransit(x =>
+        var kafkaConfig = configuration.GetSection("KafkaConfig").Get<KafkaConfig>();
+        services.AddSingleton<IProducer<string, string>>(provider =>
         {
-            x.AddSagaStateMachine<OrderStateMachine, OrderState>()
-                .EntityFrameworkRepository(r =>
-                {
-                    r.ConcurrencyMode = ConcurrencyMode.Pessimistic;
-                    r.AddDbContext<DbContext, SagaDbContext>((provider, options) =>
-                    {
-                        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-                    });
-                });
-
-            x.AddConsumer<CreateOrderCommandHandler>();
-
-            x.UsingRabbitMq((context, cfg) =>
+            var config = new ProducerConfig
             {
-                cfg.Host(configuration[""], h =>
-                {
-                    h.Username(configuration[""]!);
-                    h.Password(configuration[""]!);
-                });
+                BootstrapServers = kafkaConfig.BootstrapServers,
+                ClientId = kafkaConfig.ClientId,
+                Acks = Acks.All,
+                EnableIdempotence = true,
+                MessageTimeoutMs = kafkaConfig.MessageTimeoutMs,
+                RetryBackoffMs = 500,
+                MaxInFlight = 1,
+                EnableDeliveryReports = true
+            };
 
-                cfg.ReceiveEndpoint("order_saga_queue", e =>
-                {
-                    e.ConfigureSaga<OrderState>(context);
-                    e.ConfigureConsumer<CreateOrderCommandHandler>(context);
-                });
-            });
+            return new ProducerBuilder<string, string>(config).Build();
         });
         
-        
-        services.AddMassTransitHostedService();
-        
-        return services;
-    }
-
-    public static IServiceCollection ConfigureInfrastructureOptions(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<CustomerServiceHttpClientOptions>(
-            configuration.GetSection(CustomerServiceHttpClientOptions.SectionName));
-
         return services;
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Isatays.FTGO.OrderService.Core.Interfaces; 
+namespace Isatays.FTGO.OrderService.Core.Ports; 
 
 public interface IDataContext 
 {

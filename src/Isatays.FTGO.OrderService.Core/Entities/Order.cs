@@ -1,34 +1,34 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Isatays.FTGO.OrderService.Core.Entities.Enums;
+﻿using Isatays.FTGO.OrderService.Core.Entities.Enums;
 
 namespace Isatays.FTGO.OrderService.Core.Entities;
 
-[Table("Order", Schema = "public")]
 public class Order
 {
-    [Column("id")]
-    public Guid OrderId { get; set; }
+    public Guid Id { get; private set; }
+        public Guid CustomerId { get; private set; }
+        public Guid RestaurantId { get; private set; }
+        public OrderStatus Status { get; private set; }
+        public decimal TotalPrice { get; private set; }
+        public string DeliveryAddress { get; private set; }
+        public string PaymentMethod { get; private set; }
+        public DateTime CreatedAt { get; private set; }
+        public DateTime? UpdatedAt { get; private set; }
+        public DateTime? EstimatedDeliveryTime { get; private set; }
+        public List<OrderItem> Items { get; private set; } = [];
     
-    [Column("customerId")]
-    public int CustomerId { get; set; }
-    
-    public Customer Customer { get; set; }
-    
-    [Column("date")]
-    public DateTime OrderDate { get; set; }
-    
-    [Column("deliveryDate")]
-    public DateTime? DeliveryDate { get; set; }
-    
-    public List<OrderItem> Items { get; set; } = new();
-    
-    [Column("status")]
-    public OrderStatus Status { get; set; }
-    public decimal TotalAmount => CalculateTotalAmount();
-    public PaymentDetails Payment { get; set; }
-    public DeliveryAddress DeliveryAddress { get; set; }
-    public string Notes { get; set; }
+    // Constructor for new order
+    private Order(Guid customerId, Guid restaurantId, string deliveryAddress, string paymentMethod, List<OrderItem> items)
+    {
+        Id = Guid.NewGuid();
+        CustomerId = customerId;
+        RestaurantId = restaurantId;
+        Status = OrderStatus.Created;
+        DeliveryAddress = deliveryAddress;
+        PaymentMethod = paymentMethod;
+        CreatedAt = DateTime.UtcNow;
+        TotalPrice = CalculateTotalPrice(items);
+        Items = items;
+    }
 
     public void AddItem(OrderItem item)
     {
@@ -42,14 +42,9 @@ public class Order
         UpdateStatus();
     }
     
-    private decimal CalculateTotalAmount()
+    private decimal CalculateTotalPrice(List<OrderItem> items)
     {
-        decimal total = 0;
-        foreach (var item in Items)
-        {
-            total += item.Price * item.Quantity;
-        }
-        return total;
+        return items.Sum(item => item.Price * item.Quantity);
     }
     
     public void UpdateStatus()
@@ -64,25 +59,37 @@ public class Order
         }
     }
     
-    public bool IsPaid()
-    {
-        return Payment != null && Payment.IsPaymentCompleted;
-    }
-    
     public void MarkAsDelivered()
     {
-        if (Status == OrderStatus.InProgress)
+        if (Status == OrderStatus.InDelivery)
         {
             Status = OrderStatus.Delivered;
-            DeliveryDate = DateTime.Now;
         }
     }
     
     public void CancelOrder()
     {
-        if (Status == OrderStatus.Created || Status == OrderStatus.InProgress)
+        if (Status == OrderStatus.Created || Status == OrderStatus.InDelivery)
         {
-            Status = OrderStatus.Canceled;
+            Status = OrderStatus.Cancelled;
         }
+    }
+    
+    public static Order Create(Guid customerId, Guid restaurantId, string deliveryAddress, string paymentMethod, List<OrderItem> items)
+    {
+        // Validate inputs
+        if (customerId == Guid.Empty)
+            throw new ArgumentException("Customer ID cannot be empty", nameof(customerId));
+
+        if (restaurantId == Guid.Empty)
+            throw new ArgumentException("Restaurant ID cannot be empty", nameof(restaurantId));
+
+        if (string.IsNullOrEmpty(deliveryAddress))
+            throw new ArgumentException("Delivery address cannot be empty", nameof(deliveryAddress));
+
+        if (items == null || !items.Any())
+            throw new ArgumentException("Order must contain at least one item", nameof(items));
+
+        return new Order(customerId, restaurantId, deliveryAddress, paymentMethod, items);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Isatays.FTGO.OrderService.Core.Entities;
 using KDS.Primitives.FluentResult;
 
-namespace Isatays.FTGO.OrderService.Core.Interfaces; 
+namespace Isatays.FTGO.OrderService.Core.Ports; 
 
 public interface IOrderService
 {

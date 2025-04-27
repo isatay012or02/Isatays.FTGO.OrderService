@@ -3,8 +3,12 @@ namespace Isatays.FTGO.OrderService.Core.Entities.Enums;
 public enum OrderStatus
 {
     Empty,
-    Created,
-    InProgress,
-    Delivered,
-    Canceled
+    Created, 
+    Accepted,
+    Preparing,
+    Ready,
+    InDelivery,
+    Delivered, 
+    Cancelled
+    
 }

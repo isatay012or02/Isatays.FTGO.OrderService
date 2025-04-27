@@ -1,5 +1,5 @@
 ﻿using Isatays.FTGO.OrderService.Core.Entities;
-using Isatays.FTGO.OrderService.Core.Interfaces;
+using Isatays.FTGO.OrderService.Core.Ports;
 using Microsoft.EntityFrameworkCore;
 
 namespace Isatays.FTGO.OrderService.Infrastructure.Persistence;

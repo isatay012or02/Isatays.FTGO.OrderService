@@ -4,11 +4,16 @@ namespace Isatays.FTGO.OrderService.Infrastructure.Persistence;
 
 public class UnitOfWork(
     IOrderRepository orderRepository, 
-    DataContext context)
+    IDataContext context)
 : IUnitOfWork
 {
     public IOrderRepository OrderRepository { get; set; } = orderRepository;
     
     public Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
         context.SaveChangesAsync(cancellationToken);
+    
+    public void Dispose()
+    {
+        context.Dispose();
+    }
 }

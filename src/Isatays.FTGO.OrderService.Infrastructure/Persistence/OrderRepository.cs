@@ -14,22 +14,14 @@ public class OrderRepository(
 {
     public async Task<Result> AddAsync(Order order)
     {
-        await using (var trans = await dataContext.Database.BeginTransactionAsync())
+        try
         {
-            try
-            {
-                await dataContext.Orders.AddAsync(order);
-
-                await dataContext.SaveChangesAsync();
-				
-                await trans.CommitAsync();
-            }
-            catch (Exception ex)
-            {
-                await trans.RollbackAsync();
-                logger.LogError("{Message}", $"Exception message: {ex.Message}");
-                return Result.Failure(DomainError.DatabaseFailed);
-            }
+            await dataContext.Orders.AddAsync(order);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("{Message}", $"Exception message: {ex.Message}");
+            return Result.Failure(DomainError.DatabaseFailed);
         }
 
         return Result.Success();

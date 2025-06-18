@@ -5,16 +5,16 @@ namespace Isatays.FTGO.OrderService.Core.Entities;
 public class Order
 {
     public Guid Id { get; private set; }
-        public Guid CustomerId { get; private set; }
-        public Guid RestaurantId { get; private set; }
-        public OrderStatus Status { get; private set; }
-        public decimal TotalPrice { get; private set; }
-        public string DeliveryAddress { get; private set; }
-        public string PaymentMethod { get; private set; }
-        public DateTime CreatedAt { get; private set; }
-        public DateTime? UpdatedAt { get; private set; }
-        public DateTime? EstimatedDeliveryTime { get; private set; }
-        public List<OrderItem> Items { get; private set; } = [];
+    public Guid CustomerId { get; private set; }
+    public Guid RestaurantId { get; private set; }
+    public OrderStatus Status { get; private set; }
+    public decimal TotalPrice { get; private set; }
+    public string DeliveryAddress { get; private set; }
+    public string PaymentMethod { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
+    public DateTime? EstimatedDeliveryTime { get; private set; }
+    public List<OrderItem> Items { get; private set; } = [];
     
     // Constructor for new order
     private Order(Guid customerId, Guid restaurantId, string deliveryAddress, string paymentMethod, List<OrderItem> items)
